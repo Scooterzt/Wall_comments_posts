@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Wall</title>
+    <style>
+        *{
+            margin: 2px;
+        }
+        body{
+            margin: 50px 0 0 50px;
+
+        }
+        .wallpaper{
+            margin: 0 auto;
+            width: 800px;
+            background-image: linear-gradient(rgb(227, 251, 255), white);
+            padding: 10px;
+        }
+        p{
+            font-family: Arial, Helvetica, sans-serif;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="wallpaper">
+        <h1>Welcome, {{user.first_name}}.</h1>
+        <a href="/log_out"> --> Log Out</a>
+        <div class="post">
+            <h2>Add Post</h2>
+            <form action="post_massage" method="POST">
+                {% csrf_token %}
+                <textarea name="add_post" cols="50" rows="5"></textarea><br>
+                <button type="submit">Add Post</button>
+            </form>
+        </div>
+        {% for message in messages %}
+        <h2>{{message.user.first_name}} - {{message.created_at}}</h2>
+        <h3>Post {{message.id}}: {{message.message}}.</h3>
+            {% for comment in message.comments.all %}
+            <h3>{{comment.user.first_name}} - {{comment.created_at}}</h3>
+            <p>Comment: {{comment.comment}}.</p>
+            {% if comment.user.id == user.id %}
+            <a href="/delete_comment/{{comment.id}}"> >> Delete this comment</a>
+            {% endif %}
+            {% endfor %}
+        <form action="add_comment" method="POST">
+            {% csrf_token %}
+            <textarea name="add_comment" cols="30" rows="2"></textarea><br>
+            <input type="hidden" name="post_id" value="{{message.id}}">
+            <button type="submit">Add comment</button>
+        </form>
+        {% endfor %}
+    </div>
+</body>
+</html>
